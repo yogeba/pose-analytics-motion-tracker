@@ -107,10 +107,10 @@ export const useMultiPersonPoseDetection = ({
 
       // Create tracked pose
       const trackedPose: PersonPose = {
-        id: bestMatch ? bestMatch.id : Date.now() + index,
+        id: bestMatch?.id ?? Date.now() + index,
         keypoints: currentPose.keypoints,
         score: currentPose.score || 0,
-        color: bestMatch ? bestMatch.color : PERSON_COLORS[index % PERSON_COLORS.length],
+        color: bestMatch?.color ?? PERSON_COLORS[index % PERSON_COLORS.length],
         trackingId: generateTrackingId(currentPose)
       };
 

@@ -144,12 +144,12 @@ export const useComprehensivePoseAnalytics = () => {
       // Clear timers
       if (sessionTimerRef.current) {
         clearInterval(sessionTimerRef.current)
-        sessionTimerRef.current = undefined
+        sessionTimerRef.current = null
       }
       
       if (feedbackIntervalRef.current) {
         clearInterval(feedbackIntervalRef.current)
-        feedbackIntervalRef.current = undefined
+        feedbackIntervalRef.current = null
       }
       
       // Stop recording if active

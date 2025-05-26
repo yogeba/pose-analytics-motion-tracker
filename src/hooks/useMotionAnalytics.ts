@@ -55,7 +55,7 @@ export function useMotionAnalytics(config?: MotionAnalyticsConfig) {
   const velocityHistoryRef = useRef<VelocityData[]>([]);
   const sessionActiveRef = useRef<boolean>(false);
 
-  const { stream, error: cameraError } = useRobustCamera();
+  const robustCamera = useRobustCamera();
 
   // Initialize detector and calculator
   useEffect(() => {
@@ -279,8 +279,8 @@ export function useMotionAnalytics(config?: MotionAnalyticsConfig) {
 
   return {
     ...state,
-    stream,
-    cameraError,
+    stream: null,
+    cameraError: null,
     startSession,
     stopSession,
     calibrateFromPose,
