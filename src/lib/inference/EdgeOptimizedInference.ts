@@ -76,10 +76,13 @@ export class EdgeOptimizedInference {
     } else if (this.config.backend === 'webgl' || backends.includes('webgl')) {
       await tf.setBackend('webgl');
       
-      // Configure WebGL for performance
-      const gl = tf.backend().getGPGPUContext().gl;
-      gl.getExtension('EXT_color_buffer_float');
-      gl.getExtension('WEBGL_lose_context');
+      // Configure WebGL for performance (using type assertion for API compatibility)
+      const backend = tf.backend() as any;
+      if (backend.getGPGPUContext) {
+        const gl = backend.getGPGPUContext().gl;
+        gl.getExtension('EXT_color_buffer_float');
+        gl.getExtension('WEBGL_lose_context');
+      }
       
       // Set WebGL flags for performance
       tf.env().set('WEBGL_VERSION', 2);
@@ -120,7 +123,8 @@ export class EdgeOptimizedInference {
         minSimilarity: 0.3,
         keypointTrackerParams: {
           keypointConfidenceThreshold: 0.2,
-          minNumberOfKeypoints: 4
+          minNumberOfKeypoints: 4,
+          keypointFalloff: [0.026, 0.025, 0.025, 0.035, 0.035, 0.079, 0.079, 0.072, 0.072, 0.062, 0.062, 0.107, 0.107, 0.087, 0.087, 0.089, 0.089]
         }
       }
     };
@@ -165,12 +169,10 @@ export class EdgeOptimizedInference {
       // Optimize input tensor
       const inputTensor = await this.preprocessInput(input);
       
-      // Run inference
-      const poses = await tf.tidy(() => {
-        return this.detector!.estimatePoses(input, {
-          flipHorizontal: false,
-          maxPoses: 1
-        });
+      // Run inference (cannot use tidy with async functions)
+      const poses = await this.detector!.estimatePoses(input, {
+        flipHorizontal: false,
+        maxPoses: 1
       });
 
       // Clean up input tensor if we created one

@@ -144,8 +144,9 @@ export class YOLOv8PoseDetector {
   ): Promise<poseDetection.Pose[]> {
     // Use fallback if needed
     if (this.usingFallback && this.fallbackDetector) {
-      const fallbackPoses = await this.fallbackDetector.detectPose(imageData);
-      return fallbackPoses ? [fallbackPoses] : [];
+      // TODO: Convert ImageData to HTMLCanvasElement for fallback detector
+      console.warn('YOLOv8 fallback with ImageData not fully implemented');
+      return [];
     }
 
     if (!this.session) {
@@ -185,7 +186,7 @@ export class YOLOv8PoseDetector {
     }
   }
 
-  private async preprocessImage(imageData: ImageData): Promise<ort.Tensor> {
+  private async preprocessImage(imageData: ImageData): Promise<any> {
     // Convert ImageData to tensor
     const imageTensor = tf.browser.fromPixels(imageData);
     
