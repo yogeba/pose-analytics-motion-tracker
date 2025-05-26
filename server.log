@@ -1,0 +1,32 @@
+
+> pose-analytics-mobile@0.1.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.3.2 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://10.111.26.7:3000
+
+ ✓ Starting...
+ ✓ Ready in 1039ms
+ ○ Compiling / ...
+Failed to download `Geist Mono` from Google Fonts. Using fallback font instead.
+Failed to download `Geist` from Google Fonts. Using fallback font instead.
+ ✓ Compiled / in 9.5s
+ ⚠ [next]/internal/font/google/geist_e531dabc.module.css
+Error while requesting resource
+There was an issue establishing a connection while requesting https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap.
+
+
+ ⚠ [next]/internal/font/google/geist_mono_68a01160.module.css
+Error while requesting resource
+There was an issue establishing a connection while requesting https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap.
+
+
+ HEAD / 200 in 9996ms
+ ⚠ Found a change in next.config.mjs. Restarting the server to apply the changes...
+   ▲ Next.js 15.3.2 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://10.111.26.7:3000
+
+ ✓ Starting...
+ ✓ Ready in 1204ms

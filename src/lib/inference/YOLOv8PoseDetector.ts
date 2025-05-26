@@ -71,15 +71,22 @@ export class YOLOv8PoseDetector {
 
   async loadModel(): Promise<void> {
     try {
-      // Try to dynamically import ONNX runtime
+      // Try to dynamically import ONNX runtime only in browser
       if (!ort && typeof window !== 'undefined') {
         try {
-          ort = await import('onnxruntime-web');
+          // Use dynamic import with comment to help webpack
+          ort = await import(/* webpackIgnore: true */ 'onnxruntime-web');
         } catch (e) {
           console.warn('ONNX runtime not available, using fallback');
           await this.initializeFallbackModel();
           return;
         }
+      }
+      
+      // If no ONNX runtime available (SSR or failed import), use fallback
+      if (!ort) {
+        await this.initializeFallbackModel();
+        return;
       }
       
       // Set ONNX environment for optimal performance

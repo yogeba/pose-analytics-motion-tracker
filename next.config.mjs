@@ -1,6 +1,5 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   experimental: {
     turbopack: true,
   },
@@ -21,11 +20,15 @@ const nextConfig: NextConfig = {
       use: { loader: 'worker-loader' },
     });
 
-    // Exclude MediaPipe modules that cause build issues
+    // Exclude problematic modules
     config.externals = config.externals || [];
     if (Array.isArray(config.externals)) {
       config.externals.push('@mediapipe/pose');
       config.externals.push('@mediapipe/holistic');
+      // Exclude ONNX runtime in production build
+      if (!dev) {
+        config.externals.push('onnxruntime-web');
+      }
     }
 
     // Resolve alias to avoid MediaPipe imports
@@ -35,17 +38,29 @@ const nextConfig: NextConfig = {
       '@mediapipe/holistic': false,
     };
 
-    // Add WebAssembly support for ONNX Runtime
+    // Add WebAssembly support
     config.experiments = {
       ...config.experiments,
       asyncWebAssembly: true,
+      layers: true,
     };
     
-    // Add rule for .wasm files
+    // Handle .wasm files
     config.module.rules.push({
       test: /\.wasm$/,
       type: 'asset/resource',
     });
+
+    // Ignore ONNX runtime web in production to avoid build issues
+    if (!dev) {
+      config.module = {
+        ...config.module,
+        noParse: [
+          ...(config.module.noParse || []),
+          /onnxruntime-web/,
+        ],
+      };
+    }
 
     return config;
   },
