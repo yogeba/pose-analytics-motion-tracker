@@ -1,8 +1,10 @@
-import * as ort from 'onnxruntime-web';
 import * as poseDetection from '@tensorflow-models/pose-detection';
 import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 import { EdgeOptimizedInference } from './EdgeOptimizedInference';
+
+// Dynamic import for ONNX runtime to avoid build issues
+let ort: any = null;
 
 export interface YOLOv8DetectionOptions {
   maxPoses?: number;
@@ -25,7 +27,7 @@ const COCO_KEYPOINTS = [
 ];
 
 export class YOLOv8PoseDetector {
-  private session: ort.InferenceSession | null = null;
+  private session: any | null = null;
   private modelPath: string;
   private executionProviders: string[];
   private confidenceThreshold = 0.3;
@@ -69,11 +71,22 @@ export class YOLOv8PoseDetector {
 
   async loadModel(): Promise<void> {
     try {
+      // Try to dynamically import ONNX runtime
+      if (!ort && typeof window !== 'undefined') {
+        try {
+          ort = await import('onnxruntime-web');
+        } catch (e) {
+          console.warn('ONNX runtime not available, using fallback');
+          await this.initializeFallbackModel();
+          return;
+        }
+      }
+      
       // Set ONNX environment for optimal performance
       ort.env.wasm.numThreads = navigator.hardwareConcurrency || 4;
       ort.env.wasm.simd = true;
       
-      const sessionOptions: ort.InferenceSession.SessionOptions = {
+      const sessionOptions = {
         executionProviders: this.executionProviders,
         graphOptimizationLevel: 'all',
         enableCpuMemArena: true,
@@ -103,7 +116,7 @@ export class YOLOv8PoseDetector {
     try {
       // Create dummy input
       const dummyInput = new Float32Array(1 * 3 * this.inputSize * this.inputSize);
-      const inputTensor = new ort.Tensor('float32', dummyInput, [1, 3, this.inputSize, this.inputSize]);
+      const inputTensor = new (ort as any).Tensor('float32', dummyInput, [1, 3, this.inputSize, this.inputSize]);
       
       // Run inference
       await this.session.run({ images: inputTensor });
@@ -191,11 +204,11 @@ export class YOLOv8PoseDetector {
     transposed.dispose();
     batched.dispose();
     
-    return new ort.Tensor('float32', data as Float32Array, [1, 3, this.inputSize, this.inputSize]);
+    return new (ort as any).Tensor('float32', data as Float32Array, [1, 3, this.inputSize, this.inputSize]);
   }
 
   private processOutput(
-    outputs: ort.InferenceSession.OnnxValueMapType,
+    outputs: any,
     imageWidth: number,
     imageHeight: number,
     options?: YOLOv8DetectionOptions

@@ -35,6 +35,18 @@ const nextConfig: NextConfig = {
       '@mediapipe/holistic': false,
     };
 
+    // Add WebAssembly support for ONNX Runtime
+    config.experiments = {
+      ...config.experiments,
+      asyncWebAssembly: true,
+    };
+    
+    // Add rule for .wasm files
+    config.module.rules.push({
+      test: /\.wasm$/,
+      type: 'asset/resource',
+    });
+
     return config;
   },
   // Enable static optimization

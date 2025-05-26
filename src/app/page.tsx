@@ -1,12 +1,21 @@
 import PoseCamera from '@/components/PoseCamera'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, Zap } from 'lucide-react'
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-black">
       <div className="absolute top-4 right-4 z-50 flex flex-col gap-2">
+        <Link href="/motion-analytics">
+          <Button 
+            variant="outline" 
+            className="bg-green-600/20 backdrop-blur-xl border-green-400/30 text-green-100 hover:bg-green-600/30 w-full"
+          >
+            <Zap className="mr-2 h-4 w-4" />
+            Motion Analytics (YOLOv8 + Speed Tracking)
+          </Button>
+        </Link>
         <Link href="/performance">
           <Button 
             variant="outline" 
