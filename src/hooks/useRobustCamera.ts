@@ -257,11 +257,11 @@ export const useRobustCamera = () => {
       // Start camera with specific device
       const constraints: CameraConstraints = {
         video: {
-          deviceId: { exact: nextDevice.deviceId } as any,
+          deviceId: { exact: nextDevice.deviceId },
           width: { ideal: 640 },
           height: { ideal: 480 },
           frameRate: { ideal: 30 }
-        }
+        } as any
       }
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints)

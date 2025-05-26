@@ -291,7 +291,7 @@ export const usePoseDetection = () => {
         const pose = poses[0]
         
         // Convert to standardized format
-        const keypoints: Keypoint[] = pose.keypoints.map((kp, index) => ({
+        const keypoints: Keypoint[] = pose.keypoints.map((kp: any, index: number) => ({
           x: kp.x,
           y: kp.y,
           confidence: kp.score || 0,

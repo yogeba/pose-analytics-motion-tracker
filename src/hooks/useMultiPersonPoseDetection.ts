@@ -106,18 +106,21 @@ export const useMultiPersonPoseDetection = ({
       });
 
       // Create tracked pose
+      const poseId = bestMatch ? (bestMatch as PersonPose).id : Date.now() + index;
+      const poseColor = bestMatch ? (bestMatch as PersonPose).color : PERSON_COLORS[index % PERSON_COLORS.length];
+      
       const trackedPose: PersonPose = {
-        id: bestMatch?.id ?? Date.now() + index,
+        id: poseId,
         keypoints: currentPose.keypoints,
         score: currentPose.score || 0,
-        color: bestMatch?.color ?? PERSON_COLORS[index % PERSON_COLORS.length],
+        color: poseColor,
         trackingId: generateTrackingId(currentPose)
       };
 
       // Apply smoothing if enabled
       if (smoothing && bestMatch) {
         trackedPose.keypoints = trackedPose.keypoints.map((kp, kpIndex) => {
-          const prevKp = bestMatch.keypoints[kpIndex];
+          const prevKp = (bestMatch as PersonPose).keypoints[kpIndex];
           if (prevKp && (kp.score || 0) > minPartConfidence && (prevKp.score || 0) > minPartConfidence) {
             return {
               ...kp,

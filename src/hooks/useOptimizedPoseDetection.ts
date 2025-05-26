@@ -86,17 +86,18 @@ export const useOptimizedPoseDetection = () => {
       // Configure TF.js for performance - check if flags exist before setting
       const optimizations = performanceRef.current.getTensorFlowOptimizations()
       
-      // Only set flags that have been registered
-      if (tf.env().flags['WEBGL_PACK'] !== undefined) {
+      // Only set flags that have been registered (using type assertion for TensorFlow.js compatibility)
+      const envFlags = (tf.env() as any).flags;
+      if (envFlags['WEBGL_PACK'] !== undefined) {
         tf.env().set('WEBGL_PACK', optimizations.webgl.pack)
       }
-      if (tf.env().flags['WEBGL_CHANNELS_LAST'] !== undefined) {
+      if (envFlags['WEBGL_CHANNELS_LAST'] !== undefined) {
         tf.env().set('WEBGL_CHANNELS_LAST', optimizations.webgl.channelsLast)
       }
-      if (tf.env().flags['WEBGL_DOWNLOAD_FLOAT_ENABLED'] !== undefined) {
+      if (envFlags['WEBGL_DOWNLOAD_FLOAT_ENABLED'] !== undefined) {
         tf.env().set('WEBGL_DOWNLOAD_FLOAT_ENABLED', true)
       }
-      if (tf.env().flags['PRODUCTION'] !== undefined) {
+      if (envFlags['PRODUCTION'] !== undefined) {
         tf.env().set('PRODUCTION', true)
       }
       
@@ -126,8 +127,7 @@ export const useOptimizedPoseDetection = () => {
           modelType,
           enableSmoothing: true,
           minPoseScore: 0.2, // Lowered to detect more keypoints
-          multiPoseMaxDimension: 256, // Lower resolution for mobile
-          enableSegmentation: false // Disable segmentation for performance
+          multiPoseMaxDimension: 256 // Lower resolution for mobile
         }
       )
       
