@@ -1,0 +1,43 @@
+[2025-05-23T13:06:41.186Z] INFO: Initializing Puppeteer browser...
+[2025-05-23T13:06:50.786Z] INFO: Browser initialized successfully
+[2025-05-23T13:06:50.788Z] INFO: Testing camera permissions...
+[2025-05-23T13:06:51.671Z] INFO: Camera permissions: DENIED
+[2025-05-23T13:06:51.672Z] ERROR: Camera error: MediaDevices API not available
+[2025-05-23T13:06:51.673Z] INFO: Testing WebGL support...
+[2025-05-23T13:06:52.267Z] INFO: WebGL support: YES
+[2025-05-23T13:06:52.270Z] INFO: WebGL vendor: WebKit
+[2025-05-23T13:06:52.271Z] INFO: WebGL renderer: WebKit WebGL
+[2025-05-23T13:06:52.271Z] INFO: Navigating to PoseAnalytics app...
+[2025-05-23T13:07:22.277Z] ERROR: Failed to load app: Navigation timeout of 30000 ms exceeded
+[2025-05-23T13:07:22.280Z] INFO: Taking screenshot: 01-app-loaded.png
+[2025-05-23T13:07:25.131Z] BROWSER: BROWSER: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2025-05-23T13:07:25.154Z] BROWSER: BROWSER: Loading TensorFlow.js and MoveNet...
+[2025-05-23T13:07:25.666Z] BROWSER: BROWSER: Stopping pose detection
+[2025-05-23T13:07:25.668Z] BROWSER: BROWSER: Loading TensorFlow.js and MoveNet...
+[2025-05-23T13:07:26.869Z] BROWSER: BROWSER: Failed to load user settings, using defaults: JSHandle@error
+[2025-05-23T13:07:26.872Z] BROWSER: BROWSER: Failed to save default settings: JSHandle@error
+[2025-05-23T13:07:27.079Z] BROWSER: BROWSER: All managers initialized successfully
+[2025-05-23T13:07:27.084Z] BROWSER: BROWSER: All managers initialized successfully
+[2025-05-23T13:07:27.141Z] BROWSER: BROWSER: [Fast Refresh] rebuilding
+[2025-05-23T13:07:27.796Z] BROWSER: BROWSER: Creating MoveNet detector...
+[2025-05-23T13:07:27.799Z] BROWSER: BROWSER: Creating MoveNet detector...
+[2025-05-23T13:07:28.181Z] INFO: Screenshot saved: 01-app-loaded.png
+[2025-05-23T13:07:28.184Z] INFO: Testing TensorFlow.js initialization...
+[2025-05-23T13:07:28.206Z] INFO: TensorFlow loaded: false
+[2025-05-23T13:07:28.206Z] ERROR: TensorFlow error: Failed to resolve module specifier '@tensorflow/tfjs'
+[2025-05-23T13:07:28.207Z] INFO: Testing camera initialization...
+[2025-05-23T13:07:28.285Z] ERROR: Camera initialization test failed: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text("Start Camera"), button[class*="bg-blue"]' is not a valid selector.
+[2025-05-23T13:07:28.286Z] INFO: Taking screenshot: 02-camera-started.png
+[2025-05-23T13:07:29.455Z] INFO: Screenshot saved: 02-camera-started.png
+[2025-05-23T13:07:29.481Z] INFO: Testing canvas overlay...
+[2025-05-23T13:07:29.539Z] INFO: Canvas found: true
+[2025-05-23T13:07:29.542Z] INFO: Canvas dimensions: 300x150
+[2025-05-23T13:07:29.570Z] INFO: Canvas display size: 766x430.875
+[2025-05-23T13:07:29.651Z] INFO: Canvas position: absolute
+[2025-05-23T13:07:29.660Z] INFO: Taking screenshot: 03-final-state.png
+[2025-05-23T13:07:30.582Z] INFO: Screenshot saved: 03-final-state.png
+[2025-05-23T13:07:30.602Z] INFO: === DEBUG REPORT ===
+[2025-05-23T13:07:30.602Z] INFO: Total tests: 4
+[2025-05-23T13:07:30.602Z] INFO: Passed: 2
+[2025-05-23T13:07:30.602Z] INFO: Failed: 2
+[2025-05-23T13:07:30.603Z] INFO: Report saved: /Users/yogeba/Code/inferenceml/pose-analytics-mobile/camera-debug-report.json

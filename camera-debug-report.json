@@ -1,0 +1,59 @@
+{
+  "timestamp": "2025-05-23T13:07:30.589Z",
+  "summary": {
+    "total": 4,
+    "passed": 2,
+    "failed": 2
+  },
+  "tests": [
+    {
+      "test": "Camera Permissions",
+      "success": false,
+      "details": {
+        "success": false,
+        "error": "MediaDevices API not available"
+      }
+    },
+    {
+      "test": "WebGL Support",
+      "success": true,
+      "details": {
+        "supported": true,
+        "vendor": "WebKit",
+        "renderer": "WebKit WebGL",
+        "version": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+        "maxTextureSize": 16384,
+        "maxViewportDims": {
+          "0": 16384,
+          "1": 16384
+        }
+      }
+    },
+    {
+      "test": "TensorFlow Initialization",
+      "success": false,
+      "details": {
+        "success": false,
+        "error": "Failed to resolve module specifier '@tensorflow/tfjs'"
+      }
+    },
+    {
+      "test": "Canvas Overlay",
+      "success": true,
+      "details": {
+        "found": true,
+        "width": 300,
+        "height": 150,
+        "displayWidth": 766,
+        "displayHeight": 430.875,
+        "hasContext": true,
+        "style": {
+          "position": "absolute",
+          "zIndex": "10",
+          "top": "0px",
+          "left": "0px"
+        }
+      }
+    }
+  ]
+}
