@@ -7,7 +7,6 @@ import {
   Focus, 
   ZoomIn,
   Sliders,
-  X,
   Minus,
   Plus
 } from 'lucide-react'

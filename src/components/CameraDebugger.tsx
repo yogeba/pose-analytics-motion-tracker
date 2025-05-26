@@ -131,8 +131,8 @@ export function CameraDebugger({ videoRef, canvasRef, isActive = false }: Camera
   const checkTensorFlowStatus = async (): Promise<DebugInfo['tensorflow']> => {
     try {
       // Check if TensorFlow is available globally
-      if (typeof (window as Record<string, unknown>).tf !== 'undefined') {
-        const tf = (window as Record<string, unknown>).tf as { getBackend: () => string; version: { tfjs: string }; memory: () => unknown }
+      if (typeof (window as any).tf !== 'undefined') {
+        const tf = (window as any).tf
         return {
           loaded: true,
           backend: tf.getBackend(),

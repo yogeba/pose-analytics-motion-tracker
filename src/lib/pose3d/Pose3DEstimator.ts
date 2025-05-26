@@ -1,5 +1,4 @@
 import { Keypoint } from '@tensorflow-models/pose-detection';
-import * as tf from '@tensorflow/tfjs-core';
 
 export interface Keypoint3D extends Keypoint {
   z: number; // Depth in meters

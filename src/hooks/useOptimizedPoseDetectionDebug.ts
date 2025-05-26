@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { PerformanceOptimizer, performanceOptimizer, throttleRAF, MetricsBuffer } from '@/lib/performance/PerformanceOptimizer'
+import { PerformanceOptimizer, MetricsBuffer } from '@/lib/performance/PerformanceOptimizer'
 
 // DEBUG VERSION - Extensive logging for troubleshooting
 

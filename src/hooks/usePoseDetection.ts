@@ -10,13 +10,13 @@ const loadTensorFlowModules = async () => {
   
   try {
     // Import TensorFlow core first
-    const tf = await import('@tensorflow/tfjs-core')
+    await import('@tensorflow/tfjs-core')
     
     // Import backends
     await import('@tensorflow/tfjs-backend-webgl')
     try {
       await import('@tensorflow/tfjs-backend-webgpu')
-    } catch (e) {
+    } catch {
       console.log('WebGPU backend not available, using WebGL')
     }
     
@@ -277,8 +277,8 @@ export const usePoseDetection = () => {
       // Draw and potentially enhance the frame
       ctx.drawImage(videoElement, 0, 0)
       
-      // Apply preprocessing if needed (contrast, brightness adjustment)
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+      // Apply preprocessing if needed (contrast, brightness adjustment)  
+      const _imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
       
       // Estimate poses
       const poses = await detectorRef.current.estimatePoses(canvas, {

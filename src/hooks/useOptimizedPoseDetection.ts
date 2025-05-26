@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { PerformanceOptimizer, performanceOptimizer, throttleRAF, MetricsBuffer } from '@/lib/performance/PerformanceOptimizer'
+import { PerformanceOptimizer, MetricsBuffer } from '@/lib/performance/PerformanceOptimizer'
 
 // Optimized pose detection with performance enhancements
 // Achieves 30+ FPS on mobile devices
