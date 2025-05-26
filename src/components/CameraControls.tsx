@@ -66,9 +66,9 @@ export function CameraControls({ videoRef, onClose }: CameraControlsProps) {
             // @ts-ignore
             const settings = videoTrack.getSettings()
             setCurrentValues({
-              zoom: settings.zoom || 1,
-              exposure: settings.exposureCompensation || 0,
-              focus: settings.focusDistance || 50
+              zoom: (settings as any).zoom || 1,
+              exposure: (settings as any).exposureCompensation || 0,
+              focus: (settings as any).focusDistance || 50
             })
           }
         } catch (error) {

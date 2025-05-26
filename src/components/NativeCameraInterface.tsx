@@ -1,9 +1,8 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
-  Camera, 
   Video,
   Image,
   BarChart3,
@@ -13,8 +12,7 @@ import {
   FlashlightIcon,
   Settings,
   X,
-  Circle,
-  Square
+  Circle
 } from 'lucide-react'
 import { CameraControls } from './CameraControls'
 import { RecordingIndicator } from './RecordingIndicator'
@@ -97,13 +95,6 @@ export function NativeCameraInterface({
     setTimeout(() => setFocusPoint(null), 2000)
   }
 
-  // Format recording duration
-  const formatDuration = (ms: number) => {
-    const totalSeconds = Math.floor(ms / 1000)
-    const minutes = Math.floor(totalSeconds / 60)
-    const seconds = totalSeconds % 60
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-  }
 
   // Get current mode config
   const currentModeConfig = CAMERA_MODES.find(mode => mode.id === currentMode)
@@ -286,7 +277,7 @@ export function NativeCameraInterface({
             <div className="overflow-x-auto scrollbar-hide mb-8">
               <div className="flex justify-center min-w-min px-8">
                 <div className="flex items-center gap-6">
-                  {CAMERA_MODES.map((mode, index) => (
+                  {CAMERA_MODES.map((mode) => (
                     <motion.button
                       key={mode.id}
                       onClick={() => onModeChange(mode.id)}
