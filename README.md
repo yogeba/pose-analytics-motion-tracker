@@ -1,8 +1,20 @@
 # 📱 PoseAnalytics Mobile
 
-A **modern, mobile-first Next.js application** for AI-powered pose analysis with real-time keypoint detection and elegant statistics overlay.
+A **modern, mobile-first Next.js application** for AI-powered pose analysis with real-time motion tracking, speed analytics, and advanced keypoint detection.
+
+## 🚀 New: Motion Analytics System
+
+Track real-time speed, distance, and acceleration using state-of-the-art YOLOv8 pose detection with automatic MoveNet fallback.
 
 ## ✨ Features
+
+### ⚡ **Motion Analytics (NEW)**
+- **Real-time Speed Tracking** - Instantaneous, average, and max speed in m/s, km/h, mph
+- **Distance Measurement** - Total, horizontal, and vertical distance tracking
+- **Acceleration Analysis** - Detect explosive movements and deceleration patterns
+- **Speed Zones** - Automatic classification (stationary, walking, jogging, running, sprinting)
+- **YOLOv8 Integration** - State-of-the-art pose detection with 17 keypoints
+- **Kalman Filtering** - Smooth motion tracking with noise reduction
 
 ### 🎯 **One-Button Interface**
 - **Large, intuitive camera button** - Click to start/stop recording
