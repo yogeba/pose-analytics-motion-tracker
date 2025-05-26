@@ -321,7 +321,7 @@ function drawSkeleton(ctx: CanvasRenderingContext2D, keypoints: Array<{x: number
   connections.forEach(([i, j]) => {
     const kp1 = keypoints[i];
     const kp2 = keypoints[j];
-    if (kp1?.score > 0.3 && kp2?.score > 0.3) {
+    if (kp1?.score && kp1.score > 0.3 && kp2?.score && kp2.score > 0.3) {
       ctx.beginPath();
       ctx.moveTo(kp1.x, kp1.y);
       ctx.lineTo(kp2.x, kp2.y);
@@ -331,7 +331,7 @@ function drawSkeleton(ctx: CanvasRenderingContext2D, keypoints: Array<{x: number
 
   // Draw keypoints
   keypoints.forEach(kp => {
-    if (kp.score > 0.3) {
+    if (kp.score && kp.score > 0.3) {
       ctx.fillStyle = '#ff0000';
       ctx.beginPath();
       ctx.arc(kp.x, kp.y, 4, 0, 2 * Math.PI);

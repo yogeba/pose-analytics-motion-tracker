@@ -17,8 +17,8 @@ interface KeypointStats {
 }
 
 export const MediaPipeDemo: React.FC = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null as any);
+  const canvasRef = useRef<HTMLCanvasElement>(null as any);
   const [isStarted, setIsStarted] = useState(false);
   const [keypointStats, setKeypointStats] = useState<KeypointStats>({
     pose: 0,

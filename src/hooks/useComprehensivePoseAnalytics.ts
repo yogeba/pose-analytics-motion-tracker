@@ -20,10 +20,10 @@ export const useComprehensivePoseAnalytics = () => {
   const poseDetection = useSimplePoseDetection()
   
   // Domain managers
-  const sessionManagerRef = useRef<SessionManager>()
-  const aiCoachRef = useRef<AICoach>()
-  const videoRecorderRef = useRef<VideoRecorder>()
-  const referencePoseLoaderRef = useRef<ReferencePoseLoader>()
+  const sessionManagerRef = useRef<SessionManager | null>(null)
+  const aiCoachRef = useRef<AICoach | null>(null)
+  const videoRecorderRef = useRef<VideoRecorder | null>(null)
+  const referencePoseLoaderRef = useRef<ReferencePoseLoader | null>(null)
   
   // State
   const [isInitialized, setIsInitialized] = useState(false)
@@ -39,8 +39,8 @@ export const useComprehensivePoseAnalytics = () => {
   const [sessionDuration, setSessionDuration] = useState(0)
   
   // Refs for intervals
-  const feedbackIntervalRef = useRef<NodeJS.Timeout>()
-  const sessionTimerRef = useRef<NodeJS.Timeout>()
+  const feedbackIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const sessionTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   // Initialize all domain managers
   const initializeManagers = useCallback(async () => {

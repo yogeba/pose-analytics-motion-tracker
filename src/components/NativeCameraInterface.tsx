@@ -211,7 +211,7 @@ export function NativeCameraInterface({
                   <div className="flex items-center gap-2">
                     {currentModeConfig && (
                       <>
-                        <currentModeConfig.icon size={16} className={currentModeConfig.color} />
+                        <currentModeConfig.icon size={16} />
                         <span className="text-white text-sm font-medium">
                           {currentModeConfig.label}
                         </span>
