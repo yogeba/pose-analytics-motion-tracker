@@ -1,4 +1,4 @@
-import { ReferencePose } from './types'
+import { ReferencePose, Keypoint } from './types'
 
 export class ReferencePoseLoader {
   private poses: Map<string, ReferencePose> = new Map()
@@ -215,7 +215,7 @@ export class ReferencePoseLoader {
     })
   }
 
-  private generateTPose(): any[] {
+  private generateTPose(): Keypoint[] {
     // Simplified keypoint positions for T-pose (normalized coordinates 0-1)
     return [
       { x: 0.5, y: 0.15, confidence: 0.9, name: 'nose' },           // 0
@@ -238,7 +238,7 @@ export class ReferencePoseLoader {
     ]
   }
 
-  private generateMountainPose(): any[] {
+  private generateMountainPose(): Keypoint[] {
     return [
       { x: 0.5, y: 0.15, confidence: 0.9, name: 'nose' },
       { x: 0.48, y: 0.12, confidence: 0.8, name: 'left_eye' },
@@ -260,7 +260,7 @@ export class ReferencePoseLoader {
     ]
   }
 
-  private generateWarriorII(): any[] {
+  private generateWarriorII(): Keypoint[] {
     return [
       { x: 0.5, y: 0.15, confidence: 0.9, name: 'nose' },
       { x: 0.48, y: 0.12, confidence: 0.8, name: 'left_eye' },
@@ -282,7 +282,7 @@ export class ReferencePoseLoader {
     ]
   }
 
-  private generateSquat(): any[] {
+  private generateSquat(): Keypoint[] {
     return [
       { x: 0.5, y: 0.2, confidence: 0.9, name: 'nose' },
       { x: 0.48, y: 0.17, confidence: 0.8, name: 'left_eye' },
@@ -304,7 +304,7 @@ export class ReferencePoseLoader {
     ]
   }
 
-  private generatePlank(): any[] {
+  private generatePlank(): Keypoint[] {
     return [
       { x: 0.3, y: 0.25, confidence: 0.9, name: 'nose' },
       { x: 0.28, y: 0.22, confidence: 0.8, name: 'left_eye' },
@@ -326,7 +326,7 @@ export class ReferencePoseLoader {
     ]
   }
 
-  private generateLunge(): any[] {
+  private generateLunge(): Keypoint[] {
     return [
       { x: 0.5, y: 0.15, confidence: 0.9, name: 'nose' },
       { x: 0.48, y: 0.12, confidence: 0.8, name: 'left_eye' },

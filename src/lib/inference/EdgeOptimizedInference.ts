@@ -2,6 +2,7 @@ import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 import '@tensorflow/tfjs-backend-webgpu';
 import * as poseDetection from '@tensorflow-models/pose-detection';
+import type { TensorFlowBackend } from '@/types/common';
 
 export interface InferenceConfig {
   backend: 'webgl' | 'webgpu' | 'wasm';
@@ -77,7 +78,7 @@ export class EdgeOptimizedInference {
       await tf.setBackend('webgl');
       
       // Configure WebGL for performance (using type assertion for API compatibility)
-      const backend = tf.backend() as any;
+      const backend = tf.backend() as TensorFlowBackend;
       if (backend.getGPGPUContext) {
         const gl = backend.getGPGPUContext().gl;
         gl.getExtension('EXT_color_buffer_float');

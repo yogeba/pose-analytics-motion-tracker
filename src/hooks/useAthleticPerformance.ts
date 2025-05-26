@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { Keypoint } from '@tensorflow-models/pose-detection';
 import { AthleticPerformanceTracker, PerformanceMetrics } from '@/lib/analytics/AthleticPerformanceTracker';
+import type { SportMetrics } from '@/types/common';
 
 export interface UseAthleticPerformanceProps {
   athleteHeight?: number; // meters
@@ -11,7 +12,7 @@ export interface UseAthleticPerformanceProps {
 
 export interface AthleticPerformanceState {
   metrics: PerformanceMetrics;
-  sportMetrics: any;
+  sportMetrics: SportMetrics;
   isCalibrated: boolean;
   performanceLevel: 'beginner' | 'intermediate' | 'advanced' | 'elite';
 }
@@ -36,7 +37,7 @@ export const useAthleticPerformance = ({
     flightTime: 0,
     jumpHeight: 0
   });
-  const [sportMetrics, setSportMetrics] = useState<any>({});
+  const [sportMetrics, setSportMetrics] = useState<SportMetrics>({});
   const [performanceLevel, setPerformanceLevel] = useState<'beginner' | 'intermediate' | 'advanced' | 'elite'>('beginner');
 
   // Initialize tracker

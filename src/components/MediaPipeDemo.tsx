@@ -17,8 +17,8 @@ interface KeypointStats {
 }
 
 export const MediaPipeDemo: React.FC = () => {
-  const videoRef = useRef<HTMLVideoElement>(null as any);
-  const canvasRef = useRef<HTMLCanvasElement>(null as any);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isStarted, setIsStarted] = useState(false);
   const [keypointStats, setKeypointStats] = useState<KeypointStats>({
     pose: 0,
@@ -41,8 +41,8 @@ export const MediaPipeDemo: React.FC = () => {
   }, []);
 
   const { isLoading, error, fps, stop, restart } = useMediaPipeHolistic({
-    videoRef,
-    canvasRef,
+    videoRef: videoRef as React.RefObject<HTMLVideoElement>,
+    canvasRef: canvasRef as React.RefObject<HTMLCanvasElement>,
     onResults: handleResults,
     modelComplexity
   });

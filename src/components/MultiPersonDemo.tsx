@@ -16,8 +16,8 @@ interface PoseMetrics {
 }
 
 export const MultiPersonDemo: React.FC = () => {
-  const videoRef = useRef<HTMLVideoElement>(null as any);
-  const canvasRef = useRef<HTMLCanvasElement>(null as any);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isStarted, setIsStarted] = useState(false);
   const [maxPoses, setMaxPoses] = useState(3);
   const [poseMetrics, setPoseMetrics] = useState<PoseMetrics[]>([]);
@@ -56,7 +56,7 @@ export const MultiPersonDemo: React.FC = () => {
   }, [showSkeletons, minConfidence]);
 
   const { isLoading, error, fps, detectedPoseCount, stop, restart } = useMultiPersonPoseDetection({
-    videoRef,
+    videoRef: videoRef as React.RefObject<HTMLVideoElement>,
     maxPoses,
     minPoseConfidence: minConfidence,
     minPartConfidence: minConfidence,

@@ -1,4 +1,5 @@
 import { Keypoint } from '@tensorflow-models/pose-detection';
+import type { SportMetrics } from '@/types/common';
 
 export interface PerformanceMetrics {
   speed: {
@@ -375,7 +376,7 @@ export class AthleticPerformanceTracker {
   }
 
   // Get sport-specific metrics
-  getSportMetrics(sport: 'running' | 'jumping' | 'cycling' | 'weightlifting'): any {
+  getSportMetrics(sport: 'running' | 'jumping' | 'cycling' | 'weightlifting'): SportMetrics {
     const metrics = this.cachedMetrics || this.getEmptyMetrics();
     
     switch (sport) {
@@ -412,7 +413,7 @@ export class AthleticPerformanceTracker {
         };
         
       default:
-        return metrics;
+        return {};
     }
   }
 }

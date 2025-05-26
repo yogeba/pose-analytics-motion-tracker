@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useComprehensivePoseAnalytics } from '@/hooks/useComprehensivePoseAnalytics'
-import { useOptimizedPoseDetectionDebug as useOptimizedPoseDetection } from '@/hooks/useOptimizedPoseDetectionDebug'
+import { useWorkingPoseDetection } from '@/hooks/useWorkingPoseDetection'
 import { NativeCameraInterface, type CameraMode } from './NativeCameraInterface'
 import { CameraDebugger } from './CameraDebugger'
 
@@ -35,18 +35,19 @@ function PoseCameraCore() {
   const [cameraMode, setCameraMode] = useState<CameraMode>('pose')
   const [showNativeUI, setShowNativeUI] = useState(true)
   
-  // Use the optimized pose detection hook for 30+ FPS
+  // Use the working pose detection hook
   const {
     isInitialized,
     isDetecting,
     currentPose,
-    metrics,
     fps,
     error,
-    startCamera,
+    loadingStatus,
+    startCamera: startPoseCamera,
     startDetection,
     stopDetection,
-  } = useOptimizedPoseDetection()
+    metrics
+  } = useWorkingPoseDetection()
   
   // Use comprehensive analytics for other features
   const {
@@ -88,15 +89,16 @@ function PoseCameraCore() {
       if (isInitialized && videoRef.current && appState === 'camera') {
         try {
           console.log('Auto-starting camera on mount')
-          await startCamera(videoRef.current)
+          await startPoseCamera(videoRef.current)
           
           // Start pose detection for pose mode
           if (cameraMode === 'pose') {
             setTimeout(() => {
+              const video = videoRef.current
               const canvas = canvasRef.current
-              if (canvas && !isDetecting) {
+              if (video && canvas && !isDetecting) {
                 console.log('Auto-starting pose detection')
-                startDetection(canvas)
+                startDetection(video, canvas)
               }
             }, 500)
           }
@@ -130,12 +132,13 @@ function PoseCameraCore() {
       case 'analysis':
         // Start pose detection for pose and analysis modes
         if (!isDetecting && appState === 'camera') {
+          const video = videoRef.current
           const canvas = canvasRef.current
-          if (canvas) {
+          if (video && canvas) {
             console.log(`Starting pose detection for ${mode} mode`)
-            await startDetection(canvas)
+            await startDetection(video, canvas)
           } else {
-            console.warn('Canvas ref not available for pose detection')
+            console.warn('Video or canvas ref not available for pose detection')
           }
         }
         break

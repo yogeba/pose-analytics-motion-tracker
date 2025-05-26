@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
+import type { ExtendedWindowWithTF } from '@/types/tensorflow-extended'
 
 export default function SimpleTestPage() {
   const [log, setLog] = useState<string[]>([])
@@ -33,7 +34,7 @@ export default function SimpleTestPage() {
         addLog('Loading TensorFlow.js from CDN...')
         
         await new Promise((resolve) => {
-          if ((window as any).tf) {
+          if ((window as ExtendedWindowWithTF).tf) {
             resolve(true)
             return
           }
@@ -44,12 +45,12 @@ export default function SimpleTestPage() {
           document.head.appendChild(script)
         })
         
-        addLog(`TensorFlow.js loaded, version: ${(window as any).tf.version.tfjs}`)
+        addLog(`TensorFlow.js loaded, version: ${(window as ExtendedWindowWithTF).tf!.version.tfjs}`)
 
         // Step 3: Load MoveNet model directly
         addLog('Loading MoveNet model...')
         
-        const model = await (window as any).tf.loadGraphModel(
+        const model = await (window as ExtendedWindowWithTF).tf!.loadGraphModel(
           'https://tfhub.dev/google/tfjs-model/movenet/singlepose/lightning/4', 
           { fromTFHub: true }
         )
@@ -65,8 +66,8 @@ export default function SimpleTestPage() {
           frameCount++
           
           try {
-            const imageTensor = (window as any).tf.browser.fromPixels(videoRef.current)
-            const resized = (window as any).tf.image.resizeBilinear(imageTensor, [192, 192])
+            const imageTensor = (window as ExtendedWindowWithTF).tf!.browser.fromPixels(videoRef.current)
+            const resized = (window as ExtendedWindowWithTF).tf!.image.resizeBilinear(imageTensor, [192, 192])
             const casted = resized.cast('int32')
             const expanded = casted.expandDims(0)
             

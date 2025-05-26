@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Holistic, Results } from '@mediapipe/holistic';
 import { Camera } from '@mediapipe/camera_utils';
+import type { MediaPipeLandmark } from '@/types/common';
 
 export interface HolisticKeypoints {
-  pose: any[];
-  face: any[];
-  leftHand: any[];
-  rightHand: any[];
+  pose: MediaPipeLandmark[];
+  face: MediaPipeLandmark[];
+  leftHand: MediaPipeLandmark[];
+  rightHand: MediaPipeLandmark[];
   timestamp: number;
 }
 
