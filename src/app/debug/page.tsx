@@ -14,7 +14,7 @@ export default function DebugPage() {
     isInitialized,
     isDetecting,
     currentPose,
-    metrics,
+    metrics: _metrics,
     fps,
     error,
     modelCapabilities,

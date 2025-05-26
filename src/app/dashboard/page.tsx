@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { SessionManager } from '@/lib/domain/SessionManager'
-import { MovementAnalytics } from '@/lib/analytics/MovementAnalytics'
 import { 
   Activity, 
   TrendingUp, 
@@ -86,16 +85,21 @@ export default function DashboardPage() {
       const summaries: SessionSummary[] = filteredSessions.slice(-10).reverse().map(session => {
         const frames = session.frames || []
         const metrics = frames.reduce((acc, frame) => {
-          if (frame.performanceMetrics) {
-            acc.speeds.push(frame.performanceMetrics.speed.current)
-            acc.distances.push(frame.performanceMetrics.distance.total)
-            acc.powers.push(frame.performanceMetrics.power.current)
-            if (frame.performanceMetrics.cadence) acc.cadences.push(frame.performanceMetrics.cadence)
-            if (frame.performanceMetrics.jumpHeight) acc.jumpHeights.push(frame.performanceMetrics.jumpHeight)
-            acc.performanceLevel = frame.performanceMetrics.performanceLevel
+          // Use basic metrics from the frame
+          if (frame.metrics) {
+            // Extract speed/movement from velocities
+            const velocityValues = Object.values(frame.metrics.velocities || {})
+            if (velocityValues.length > 0) {
+              acc.speeds.push(Math.max(...velocityValues))
+            }
+            // Use symmetry and stability scores as proxy metrics
+            acc.confidences.push(frame.metrics.symmetryScore || 0)
+            if (frame.metrics.balanceMetrics) {
+              acc.confidences.push(frame.metrics.balanceMetrics.stability)
+            }
           }
-          if (frame.movementMetrics?.confidence) {
-            acc.confidences.push(frame.movementMetrics.confidence)
+          if (frame.pose?.confidence) {
+            acc.confidences.push(frame.pose.confidence)
           }
           return acc
         }, {
@@ -118,11 +122,11 @@ export default function DashboardPage() {
         const avgConfidence = metrics.confidences.length > 0 ? metrics.confidences.reduce((a, b) => a + b, 0) / metrics.confidences.length : 0
 
         return {
-          sessionId: session.sessionId,
+          sessionId: session.id,
           startTime: session.startTime,
-          endTime: session.endTime,
-          duration: session.endTime - session.startTime,
-          sport: session.metadata?.sport || 'general',
+          endTime: session.endTime || session.startTime,
+          duration: (session.endTime || session.startTime) - session.startTime,
+          sport: session.userSettings?.goals?.[0] || 'general',
           metrics: {
             averageSpeed: avgSpeed,
             maxSpeed: maxSpeed,
@@ -149,20 +153,21 @@ export default function DashboardPage() {
         const allJumpHeights: number[] = []
 
         filteredSessions.forEach(session => {
-          const sport = session.metadata?.sport || 'general'
+          const sport = session.userSettings?.goals?.[0] || 'general'
           sportCounts[sport] = (sportCounts[sport] || 0) + 1
-          totalDuration += session.endTime - session.startTime
+          totalDuration += (session.endTime || session.startTime) - session.startTime
 
           const frames = session.frames || []
           frames.forEach(frame => {
-            if (frame.performanceMetrics) {
-              allSpeeds.push(frame.performanceMetrics.speed.current)
-              allPowers.push(frame.performanceMetrics.power.current)
-              if (frame.performanceMetrics.jumpHeight) {
-                allJumpHeights.push(frame.performanceMetrics.jumpHeight)
+            if (frame.metrics) {
+              // Extract movement data from available metrics
+              const velocityValues = Object.values(frame.metrics.velocities || {})
+              if (velocityValues.length > 0) {
+                allSpeeds.push(Math.max(...velocityValues))
               }
-              if (frame.performanceMetrics.distance.total > totalDistance) {
-                totalDistance = frame.performanceMetrics.distance.total
+              // Use symmetry scores as proxy for other metrics
+              if (frame.metrics.symmetryScore) {
+                allPowers.push(frame.metrics.symmetryScore * 100) // Scale for display
               }
             }
           })

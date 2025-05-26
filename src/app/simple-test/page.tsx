@@ -32,9 +32,8 @@ export default function SimpleTestPage() {
         // Step 2: Load TensorFlow.js directly from CDN
         addLog('Loading TensorFlow.js from CDN...')
         
-        // @ts-ignore
         await new Promise((resolve) => {
-          if (window.tf) {
+          if ((window as any).tf) {
             resolve(true)
             return
           }
@@ -45,14 +44,12 @@ export default function SimpleTestPage() {
           document.head.appendChild(script)
         })
         
-        // @ts-ignore
-        addLog(`TensorFlow.js loaded, version: ${window.tf.version.tfjs}`)
+        addLog(`TensorFlow.js loaded, version: ${(window as any).tf.version.tfjs}`)
 
         // Step 3: Load MoveNet model directly
         addLog('Loading MoveNet model...')
         
-        // @ts-ignore
-        const model = await window.tf.loadGraphModel(
+        const model = await (window as any).tf.loadGraphModel(
           'https://tfhub.dev/google/tfjs-model/movenet/singlepose/lightning/4', 
           { fromTFHub: true }
         )
@@ -68,9 +65,8 @@ export default function SimpleTestPage() {
           frameCount++
           
           try {
-            // @ts-ignore
-            const imageTensor = window.tf.browser.fromPixels(videoRef.current)
-            const resized = window.tf.image.resizeBilinear(imageTensor, [192, 192])
+            const imageTensor = (window as any).tf.browser.fromPixels(videoRef.current)
+            const resized = (window as any).tf.image.resizeBilinear(imageTensor, [192, 192])
             const casted = resized.cast('int32')
             const expanded = casted.expandDims(0)
             
@@ -112,8 +108,8 @@ export default function SimpleTestPage() {
             casted.dispose()
             expanded.dispose()
             
-          } catch (err: any) {
-            addLog(`Error: ${err.message}`)
+          } catch (err) {
+            addLog(`Error: ${err instanceof Error ? err.message : String(err)}`)
           }
 
           animationId = requestAnimationFrame(detect)
@@ -122,7 +118,7 @@ export default function SimpleTestPage() {
         detect()
 
       } catch (err: any) {
-        addLog(`Setup error: ${err.message}`)
+        addLog(`Setup error: ${err instanceof Error ? err.message : String(err)}`)
       }
     }
 

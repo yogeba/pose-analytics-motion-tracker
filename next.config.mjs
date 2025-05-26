@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Temporarily disable ESLint during builds for legacy codebase
+  // TODO: Remove this after fixing all ESLint errors systematically
   eslint: {
-    // Disable ESLint during builds to prevent deployment failures
     ignoreDuringBuilds: true,
   },
   experimental: {

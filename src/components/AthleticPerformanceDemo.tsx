@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useSimplePoseDetection } from '@/hooks/useSimplePoseDetection';
 import { useAthleticPerformance } from '@/hooks/useAthleticPerformance';
 import { Card } from '@/components/ui/card';
@@ -8,9 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
   Camera, CameraOff, Activity, Zap, TrendingUp, 
-  Timer, Footprints, BarChart3, Gauge, Play, Pause, RotateCcw 
+  Footprints, BarChart3, Gauge, Play, Pause, RotateCcw 
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { drawKeypoints, drawSkeleton } from '@/lib/utils';
 
 type SportType = 'running' | 'jumping' | 'cycling' | 'weightlifting' | 'general';
@@ -65,17 +65,18 @@ export const AthleticPerformanceDemo: React.FC = () => {
   const [athleteMass, setAthleteMass] = useState(70); // kg
 
   const {
-    isDetecting,
-    detectedPose,
-    fps,
+    isDetecting: _isDetecting,
+    currentPose: detectedPose,
+    fps: _fps,
+    startCamera,
     startDetection,
     stopDetection,
     isInitialized
-  } = useSimplePoseDetection({ videoRef });
+  } = useSimplePoseDetection();
 
   const {
     metrics,
-    sportMetrics,
+    sportMetrics: _sportMetrics,
     isCalibrated,
     performanceLevel,
     processKeypoints,
@@ -105,8 +106,8 @@ export const AthleticPerformanceDemo: React.FC = () => {
     ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 
     // Draw keypoints and skeleton
-    drawKeypoints(detectedPose.keypoints, 0.3, ctx);
-    drawSkeleton(detectedPose.keypoints, 0.3, ctx);
+    drawKeypoints(ctx, detectedPose.keypoints, 0.3);
+    drawSkeleton(ctx, detectedPose.keypoints, 0.3);
 
     // Draw performance indicators
     drawPerformanceOverlay(ctx, metrics, selectedSport);
@@ -162,7 +163,7 @@ export const AthleticPerformanceDemo: React.FC = () => {
     ctx.fillText(performanceLevel.toUpperCase(), canvasRef.current!.width - 150, 40);
   };
 
-  const startCamera = async () => {
+  const startCameraAndDetection = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -173,9 +174,11 @@ export const AthleticPerformanceDemo: React.FC = () => {
       });
       
       if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+        await startCamera(videoRef.current);
         setIsStarted(true);
-        await startDetection();
+        if (canvasRef.current) {
+          await startDetection(canvasRef.current);
+        }
       }
     } catch (err) {
       console.error('Error accessing camera:', err);
@@ -300,7 +303,7 @@ export const AthleticPerformanceDemo: React.FC = () => {
                   <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                     <Button
                       size="lg"
-                      onClick={startCamera}
+                      onClick={startCameraAndDetection}
                       disabled={!isInitialized}
                       className="bg-orange-600 hover:bg-orange-700"
                     >

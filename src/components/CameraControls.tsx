@@ -54,10 +54,10 @@ export function CameraControls({ videoRef, onClose }: CameraControlsProps) {
           console.log('Camera capabilities:', caps)
           
           setCapabilities({
-            zoom: caps.zoom || { min: 1, max: 4, step: 0.1, current: 1 },
-            exposure: caps.exposureCompensation || { min: -2, max: 2, step: 0.1, current: 0 },
-            focus: caps.focusDistance || { min: 0, max: 100, step: 1, current: 50 },
-            hasManualControls: !!(caps.zoom || caps.exposureCompensation || caps.focusDistance)
+            zoom: (caps as any).zoom || { min: 1, max: 4, step: 0.1, current: 1 },
+            exposure: (caps as any).exposureCompensation || { min: -2, max: 2, step: 0.1, current: 0 },
+            focus: (caps as any).focusDistance || { min: 0, max: 100, step: 1, current: 50 },
+            hasManualControls: !!((caps as any).zoom || (caps as any).exposureCompensation || (caps as any).focusDistance)
           })
           
           // Get current settings

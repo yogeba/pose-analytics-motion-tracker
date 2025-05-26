@@ -14,7 +14,7 @@ export default function TestPage() {
   }
 
   useEffect(() => {
-    let detector: any = null
+    let detector: Awaited<ReturnType<typeof import('@tensorflow-models/pose-detection').createDetector>> | null = null
     let animationId: number
 
     const initializeTest = async () => {
@@ -64,7 +64,7 @@ export default function TestPage() {
 
             if (poses.length > 0) {
               const pose = poses[0]
-              const validKeypoints = pose.keypoints.filter((kp: any) => kp.score > 0.3)
+              const validKeypoints = pose.keypoints.filter((kp) => (kp.score ?? 0) > 0.3)
               
               setDetections(prev => prev + 1)
               
@@ -75,7 +75,7 @@ export default function TestPage() {
                 
                 // Draw keypoints
                 ctx.fillStyle = 'lime'
-                validKeypoints.forEach((kp: any) => {
+                validKeypoints.forEach((kp) => {
                   ctx.beginPath()
                   ctx.arc(kp.x, kp.y, 5, 0, 2 * Math.PI)
                   ctx.fill()
@@ -86,8 +86,8 @@ export default function TestPage() {
                 addStatus(`Detection working: ${validKeypoints.length} keypoints detected`)
               }
             }
-          } catch (err: any) {
-            addStatus(`Error: ${err.message}`)
+          } catch (err) {
+            addStatus(`Error: ${err instanceof Error ? err.message : String(err)}`)
           }
 
           animationId = requestAnimationFrame(detect)
@@ -96,8 +96,8 @@ export default function TestPage() {
         addStatus('Starting detection loop...')
         detect()
 
-      } catch (err: any) {
-        addStatus(`Error: ${err.message}`)
+      } catch (err) {
+        addStatus(`Error: ${err instanceof Error ? err.message : String(err)}`)
       }
     }
 
