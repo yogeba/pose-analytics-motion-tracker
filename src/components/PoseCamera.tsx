@@ -341,7 +341,7 @@ function PoseCameraCore() {
         case 'idle':
           // Start camera and switch to native UI
           if (videoRef.current) {
-            await startCamera(videoRef.current)
+            await startPoseCamera(videoRef.current)
             
             // Wait for video to be ready
             await new Promise((resolve) => {
