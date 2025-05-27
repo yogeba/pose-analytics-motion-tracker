@@ -364,10 +364,11 @@ function PoseCameraCore() {
             // Delay pose detection start to ensure canvas is ready
             if (cameraMode === 'pose') {
               setTimeout(async () => {
+                const video = videoRef.current
                 const canvas = canvasRef.current
-                if (canvas && !isDetecting) {
+                if (video && canvas && !isDetecting) {
                   console.log('Starting pose detection after UI ready')
-                  await startDetection(canvas)
+                  await startDetection(video, canvas)
                 }
               }, 100)
             }
