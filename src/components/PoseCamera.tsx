@@ -51,6 +51,8 @@ function PoseCameraCore() {
   
   // Use comprehensive analytics for other features
   const {
+    // Get metrics from comprehensive analytics
+    metrics: analyticsMetrics,
     
     // Managers
     isManagersInitialized,
@@ -744,7 +746,7 @@ function PoseCameraCore() {
                 {/* Similarity */}
                 <div className="text-center">
                   <div className="text-2xl font-bold text-white mb-1">
-                    {selectedReferencePose ? `${Math.round(metrics.similarity * 100)}%` : '--'}
+                    {selectedReferencePose && analyticsMetrics ? `${Math.round(analyticsMetrics.similarity * 100)}%` : '--'}
                   </div>
                   <div className="text-white/60 text-sm">Pose Match</div>
                 </div>
@@ -754,19 +756,19 @@ function PoseCameraCore() {
               <div className="grid grid-cols-3 gap-2">
                 <div className="text-center p-2 bg-white/5 rounded">
                   <div className="text-sm font-bold text-cyan-400">
-                    {Math.round(metrics.symmetryScore * 100)}%
+                    {analyticsMetrics ? Math.round(analyticsMetrics.symmetryScore * 100) : 0}%
                   </div>
                   <div className="text-xs text-white/60">Symmetry</div>
                 </div>
                 <div className="text-center p-2 bg-white/5 rounded">
                   <div className="text-sm font-bold text-green-400">
-                    {Math.round(metrics.stabilityScore * 100)}%
+                    {analyticsMetrics ? Math.round(analyticsMetrics.stabilityScore * 100) : 0}%
                   </div>
                   <div className="text-xs text-white/60">Stability</div>
                 </div>
                 <div className="text-center p-2 bg-white/5 rounded">
                   <div className="text-sm font-bold text-orange-400">
-                    {Math.round(metrics.balanceMetrics.stability * 100)}%
+                    {analyticsMetrics?.balanceMetrics ? Math.round(analyticsMetrics.balanceMetrics.stability * 100) : 0}%
                   </div>
                   <div className="text-xs text-white/60">Balance</div>
                 </div>
