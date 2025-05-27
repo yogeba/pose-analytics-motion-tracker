@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pose Detection Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f0f;
+            color: #fff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .video-container {
+            position: relative;
+            width: 640px;
+            height: 480px;
+            margin: 20px auto;
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        video, canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        video {
+            transform: scaleX(-1);
+        }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .status {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+        .status div {
+            margin: 5px 0;
+        }
+        .success { color: #4caf50; }
+        .error { color: #f44336; }
+        .warning { color: #ff9800; }
+        .info { color: #2196f3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pose Detection Test</h1>
+        <p>This is a standalone test page for pose detection using TensorFlow.js and MoveNet.</p>
+        
+        <div class="status" id="status">
+            <div id="tf-status">TensorFlow.js: <span class="warning">Not loaded</span></div>
+            <div id="camera-status">Camera: <span class="warning">Not started</span></div>
+            <div id="detector-status">Detector: <span class="warning">Not initialized</span></div>
+            <div id="fps-status">FPS: <span class="info">0</span></div>
+            <div id="keypoints-status">Keypoints: <span class="info">0</span></div>
+        </div>
+        
+        <div class="video-container">
+            <video id="video" playsinline></video>
+            <canvas id="canvas"></canvas>
+        </div>
+        
+        <div class="controls">
+            <button id="start-camera" onclick="startCamera()">Start Camera</button>
+            <button id="start-detection" onclick="startDetection()" disabled>Start Detection</button>
+            <button id="stop-detection" onclick="stopDetection()" disabled>Stop Detection</button>
+        </div>
+        
+        <div class="status">
+            <h3>Debug Log:</h3>
+            <div id="log" style="max-height: 200px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <script>
+        let video, canvas, ctx;
+        let detector = null;
+        let isDetecting = false;
+        let animationId = null;
+        let frameCount = 0;
+        let lastFpsTime = Date.now();
+        let fps = 0;
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = type;
+            entry.textContent = `[${timestamp}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function updateStatus(id, text, type = 'info') {
+            const element = document.querySelector(`#${id} span`);
+            element.textContent = text;
+            element.className = type;
+        }
+
+        async function loadTensorFlow() {
+            log('Loading TensorFlow.js...');
+            
+            // Load TensorFlow.js
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+            
+            updateStatus('tf-status', `Loaded (v${tf.version.tfjs})`, 'success');
+            log(`TensorFlow.js ${tf.version.tfjs} loaded successfully`, 'success');
+            
+            // Load pose-detection
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+            
+            log('Pose detection library loaded', 'success');
+        }
+
+        async function startCamera() {
+            try {
+                log('Requesting camera access...');
+                
+                video = document.getElementById('video');
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: 640,
+                        height: 480,
+                        facingMode: 'user'
+                    }
+                });
+                
+                video.srcObject = stream;
+                await video.play();
+                
+                updateStatus('camera-status', 'Active', 'success');
+                log('Camera started successfully', 'success');
+                
+                document.getElementById('start-camera').disabled = true;
+                document.getElementById('start-detection').disabled = false;
+                
+                // Initialize detector
+                await initializeDetector();
+                
+            } catch (error) {
+                updateStatus('camera-status', 'Error', 'error');
+                log(`Camera error: ${error.message}`, 'error');
+            }
+        }
+
+        async function initializeDetector() {
+            try {
+                log('Initializing MoveNet detector...');
+                
+                const detectorConfig = {
+                    modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
+                    enableSmoothing: true,
+                    minPoseScore: 0.25
+                };
+                
+                detector = await poseDetection.createDetector(
+                    poseDetection.SupportedModels.MoveNet,
+                    detectorConfig
+                );
+                
+                updateStatus('detector-status', 'Ready', 'success');
+                log('MoveNet detector initialized', 'success');
+                
+            } catch (error) {
+                updateStatus('detector-status', 'Error', 'error');
+                log(`Detector initialization error: ${error.message}`, 'error');
+            }
+        }
+
+        async function detectPose() {
+            if (!isDetecting || !detector) return;
+            
+            try {
+                const poses = await detector.estimatePoses(video);
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                if (poses.length > 0) {
+                    const pose = poses[0];
+                    const keypoints = pose.keypoints;
+                    
+                    // Update keypoints count
+                    const validKeypoints = keypoints.filter(kp => kp.score > 0.3).length;
+                    updateStatus('keypoints-status', `${validKeypoints}/17`, 'success');
+                    
+                    // Draw keypoints
+                    keypoints.forEach(keypoint => {
+                        if (keypoint.score > 0.3) {
+                            ctx.fillStyle = '#00ff00';
+                            ctx.beginPath();
+                            ctx.arc(keypoint.x, keypoint.y, 5, 0, 2 * Math.PI);
+                            ctx.fill();
+                        }
+                    });
+                    
+                    // Draw skeleton
+                    const adjacentKeyPoints = poseDetection.util.getAdjacentPairs(poseDetection.SupportedModels.MoveNet);
+                    adjacentKeyPoints.forEach(([i, j]) => {
+                        const kp1 = keypoints[i];
+                        const kp2 = keypoints[j];
+                        
+                        if (kp1.score > 0.3 && kp2.score > 0.3) {
+                            ctx.strokeStyle = '#00ff00';
+                            ctx.lineWidth = 2;
+                            ctx.beginPath();
+                            ctx.moveTo(kp1.x, kp1.y);
+                            ctx.lineTo(kp2.x, kp2.y);
+                            ctx.stroke();
+                        }
+                    });
+                }
+                
+                // Update FPS
+                frameCount++;
+                const now = Date.now();
+                if (now - lastFpsTime > 1000) {
+                    fps = frameCount;
+                    frameCount = 0;
+                    lastFpsTime = now;
+                    updateStatus('fps-status', fps.toString(), fps > 20 ? 'success' : 'warning');
+                }
+                
+            } catch (error) {
+                log(`Detection error: ${error.message}`, 'error');
+            }
+            
+            animationId = requestAnimationFrame(detectPose);
+        }
+
+        async function startDetection() {
+            if (!detector || !video) {
+                log('Detector or video not ready', 'error');
+                return;
+            }
+            
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            isDetecting = true;
+            document.getElementById('start-detection').disabled = true;
+            document.getElementById('stop-detection').disabled = false;
+            
+            log('Starting pose detection...', 'info');
+            detectPose();
+        }
+
+        function stopDetection() {
+            isDetecting = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            document.getElementById('start-detection').disabled = false;
+            document.getElementById('stop-detection').disabled = true;
+            
+            log('Pose detection stopped', 'info');
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', async () => {
+            log('Page loaded, initializing...', 'info');
+            await loadTensorFlow();
+        });
+    </script>
+</body>
+</html>
