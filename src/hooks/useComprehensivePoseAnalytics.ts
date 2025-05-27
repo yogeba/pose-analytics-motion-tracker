@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { useSimplePoseDetection } from './useSimplePoseDetection'
 import { SessionManager } from '@/lib/domain/SessionManager'
 import { AICoach } from '@/lib/domain/AICoach'
-import { VideoRecorder } from '@/lib/domain/VideoRecorder'
+import { VideoRecorderEnhanced as VideoRecorder } from '@/lib/domain/VideoRecorderEnhanced'
 import { ReferencePoseLoader } from '@/lib/domain/ReferencePoseLoader'
 import { 
   SessionData, 

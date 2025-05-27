@@ -22,6 +22,7 @@ import { useUnifiedPoseDetection } from '@/hooks/useUnifiedPoseDetection'
 import { NativeCameraInterface, type CameraMode } from './NativeCameraInterface'
 import { CameraDebugger } from './CameraDebugger'
 import { PoseDetectionDebugPanel } from './PoseDetectionDebugPanel'
+import { BrowserCompatibilityCheck } from './BrowserCompatibilityCheck'
 
 function PoseCameraCore() {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -328,7 +329,16 @@ function PoseCameraCore() {
 
         if (!success) {
           console.error('Recording failed to start')
-          alert('Failed to start recording. Please try again.')
+          
+          // Provide more specific error message
+          const errorMsg = 'Recording failed to start.\n\n' +
+            'Possible issues:\n' +
+            '• Browser doesn\'t support video recording\n' +
+            '• Camera permissions not granted\n' +
+            '• Try refreshing the page\n\n' +
+            'If the issue persists, try using Chrome or Edge browser.'
+          
+          alert(errorMsg)
         }
       }
     } catch (error) {
@@ -862,6 +872,9 @@ function PoseCameraCore() {
           isVisible={showDebugPanel}
         />
       )}
+      
+      {/* Browser Compatibility Check */}
+      {isMounted && <BrowserCompatibilityCheck />}
     </div>
   )
 }
