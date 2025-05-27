@@ -10,10 +10,15 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:all": "npm test && npm run test:e2e",
     "debug:camera": "node debug-camera.js",
     "debug:server": "node debug-server.js",
     "debug:client": "node debug-client.js",
-    "debug:run": "node debug-client.js run"
+    "debug:run": "node debug-client.js run",
+    "debug:pose": "npx ts-node scripts/test-pose-detection.ts"
   },
   "dependencies": {
     "@mediapipe/camera_utils": "^0.3.1675465942",
@@ -41,6 +46,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.52.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -52,6 +58,7 @@
     "eslint-config-next": "15.3.2",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "playwright": "^1.52.0",
     "puppeteer": "^23.11.1",
     "tailwindcss": "^4",
     "ts-jest": "^29.3.4",
