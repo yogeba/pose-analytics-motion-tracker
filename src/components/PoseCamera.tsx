@@ -18,9 +18,10 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useComprehensivePoseAnalytics } from '@/hooks/useComprehensivePoseAnalytics'
-import { useWorkingPoseDetection } from '@/hooks/useWorkingPoseDetection'
+import { useUnifiedPoseDetection } from '@/hooks/useUnifiedPoseDetection'
 import { NativeCameraInterface, type CameraMode } from './NativeCameraInterface'
 import { CameraDebugger } from './CameraDebugger'
+import { PoseDetectionDebugPanel } from './PoseDetectionDebugPanel'
 
 function PoseCameraCore() {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -28,6 +29,7 @@ function PoseCameraCore() {
   
   // Client-side mounting check for hydration
   const [isMounted, setIsMounted] = useState(false)
+  const [showDebugPanel, setShowDebugPanel] = useState(process.env.NODE_ENV === 'development')
   
   // Main app state - start with camera state and native UI
   const [appState, setAppState] = useState<'idle' | 'camera' | 'session' | 'recording'>('camera')
@@ -35,24 +37,23 @@ function PoseCameraCore() {
   const [cameraMode, setCameraMode] = useState<CameraMode>('pose')
   const [showNativeUI, setShowNativeUI] = useState(true)
   
-  // Use the working pose detection hook
+  // Use the unified pose detection hook
   const {
     isInitialized,
     isDetecting,
     currentPose,
+    metrics,
     fps,
     error,
     loadingStatus,
     startCamera: startPoseCamera,
     startDetection,
     stopDetection,
-    metrics
-  } = useWorkingPoseDetection()
+    monitor
+  } = useUnifiedPoseDetection()
   
   // Use comprehensive analytics for other features
   const {
-    // Get metrics from comprehensive analytics
-    metrics: analyticsMetrics,
     
     // Managers
     isManagersInitialized,
@@ -559,7 +560,7 @@ function PoseCameraCore() {
           {/* Main Camera View */}
           <div className="flex-1 px-4 pb-4">
             <Card className="bg-black/30 backdrop-blur-lg border-white/20 overflow-hidden">
-              <div className="relative aspect-video">
+              <div className="relative aspect-video" data-testid="camera-view">
                 {/* Video Feed */}
                 <video
                   ref={videoRef}
@@ -567,6 +568,7 @@ function PoseCameraCore() {
                   autoPlay
                   playsInline
                   muted
+                  data-testid="video-element"
                 />
                 
                 {/* Pose Canvas Overlay - Only render client-side */}
@@ -574,6 +576,7 @@ function PoseCameraCore() {
                   <canvas
                     ref={canvasRef}
                     className="absolute inset-0 pointer-events-none"
+                    data-testid="canvas-element"
                     style={{
                       position: 'absolute',
                       top: 0,
@@ -643,6 +646,7 @@ function PoseCameraCore() {
                   onClick={handleMainButtonClick}
                   disabled={buttonConfig.disabled}
                   size="lg"
+                  data-testid="record-button"
                   className={`
                     w-20 h-20 rounded-full relative overflow-hidden
                     ${buttonConfig.color}
@@ -746,7 +750,7 @@ function PoseCameraCore() {
                 {/* Similarity */}
                 <div className="text-center">
                   <div className="text-2xl font-bold text-white mb-1">
-                    {selectedReferencePose && analyticsMetrics ? `${Math.round(analyticsMetrics.similarity * 100)}%` : '--'}
+                    {selectedReferencePose && metrics ? `${Math.round(metrics.similarity * 100)}%` : '--'}
                   </div>
                   <div className="text-white/60 text-sm">Pose Match</div>
                 </div>
@@ -756,19 +760,19 @@ function PoseCameraCore() {
               <div className="grid grid-cols-3 gap-2">
                 <div className="text-center p-2 bg-white/5 rounded">
                   <div className="text-sm font-bold text-cyan-400">
-                    {analyticsMetrics ? Math.round(analyticsMetrics.symmetryScore * 100) : 0}%
+                    {metrics ? Math.round(metrics.symmetryScore * 100) : 0}%
                   </div>
                   <div className="text-xs text-white/60">Symmetry</div>
                 </div>
                 <div className="text-center p-2 bg-white/5 rounded">
                   <div className="text-sm font-bold text-green-400">
-                    {analyticsMetrics ? Math.round(analyticsMetrics.stabilityScore * 100) : 0}%
+                    {metrics ? Math.round(metrics.stabilityScore * 100) : 0}%
                   </div>
                   <div className="text-xs text-white/60">Stability</div>
                 </div>
                 <div className="text-center p-2 bg-white/5 rounded">
                   <div className="text-sm font-bold text-orange-400">
-                    {analyticsMetrics?.balanceMetrics ? Math.round(analyticsMetrics.balanceMetrics.stability * 100) : 0}%
+                    {metrics?.balanceMetrics ? Math.round(metrics.balanceMetrics.stability * 100) : 0}%
                   </div>
                   <div className="text-xs text-white/60">Balance</div>
                 </div>
@@ -848,6 +852,14 @@ function PoseCameraCore() {
           videoRef={videoRef}
           canvasRef={canvasRef}
           isActive={appState !== 'idle'}
+        />
+      )}
+      
+      {/* Debug Panel */}
+      {isMounted && (
+        <PoseDetectionDebugPanel 
+          monitor={monitor} 
+          isVisible={showDebugPanel}
         />
       )}
     </div>
