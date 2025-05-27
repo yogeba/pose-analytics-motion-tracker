@@ -46,9 +46,9 @@ export class PoseDetectionMonitor {
   private isMonitoring = false
 
   // Configurable thresholds
-  private readonly FPS_THRESHOLD = 20
+  private readonly FPS_THRESHOLD = 15
   private readonly CONFIDENCE_THRESHOLD = 0.3
-  private readonly MAX_FRAME_TIME = 50 // ms
+  private readonly MAX_FRAME_TIME = 100 // ms - increased for slower devices
   private readonly HISTORY_SIZE = 100
 
   constructor(private onMetricsUpdate?: (metrics: PerformanceMetrics) => void) {}

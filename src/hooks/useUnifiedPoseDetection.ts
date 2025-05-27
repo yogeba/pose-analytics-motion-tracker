@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { PoseDetectionMonitor } from '@/lib/monitoring/PoseDetectionMonitor'
+import { PerformanceOptimizer } from '@/lib/performance/PerformanceOptimizer'
 
 export interface Keypoint {
   x: number
@@ -58,6 +59,7 @@ export const useUnifiedPoseDetection = () => {
 
   const detectorRef = useRef<any>(null)
   const monitorRef = useRef(new PoseDetectionMonitor())
+  const performanceRef = useRef(new PerformanceOptimizer())
   const animationRef = useRef<number | undefined>(undefined)
   const frameCountRef = useRef(0)
   const lastFpsUpdateRef = useRef(Date.now())
@@ -102,12 +104,14 @@ export const useUnifiedPoseDetection = () => {
 
       setLoadingStatus('Creating detector...')
       
-      // Create detector
+      // Create detector with performance-optimized settings
       const model = (window as any).poseDetection.SupportedModels.MoveNet
       const detectorConfig = {
         modelType: (window as any).poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
         enableSmoothing: true,
-        minPoseScore: 0.25
+        minPoseScore: 0.3,
+        enableTracking: false, // Disable tracking for better performance
+        modelUrl: undefined // Use default CDN model
       }
       
       detectorRef.current = await (window as any).poseDetection.createDetector(model, detectorConfig)
@@ -249,6 +253,9 @@ export const useUnifiedPoseDetection = () => {
         // Update monitoring
         monitorRef.current.frameEnd(frameStart, detectionTime, renderTime)
         monitorRef.current.recordDetection(keypoints)
+        
+        // Update performance optimizer
+        performanceRef.current.recordFrameTime(detectionTime + renderTime)
 
         // Calculate metrics
         const calculatedMetrics = calculateMetrics(poseData)
@@ -303,7 +310,13 @@ export const useUnifiedPoseDetection = () => {
 
       const now = Date.now()
       
-      // Throttle to 30 FPS
+      // Use performance optimizer for frame skipping
+      if (!performanceRef.current.shouldProcessFrame()) {
+        animationRef.current = requestAnimationFrame(detect)
+        return
+      }
+      
+      // Additional throttling for consistency
       if (now - lastDetectionTime.current < 33) {
         animationRef.current = requestAnimationFrame(detect)
         return
@@ -340,9 +353,13 @@ export const useUnifiedPoseDetection = () => {
     videoRef.current = video
     canvasRef.current = canvas
 
-    // Set canvas size to match video
-    canvas.width = video.videoWidth || 640
-    canvas.height = video.videoHeight || 480
+    // Set canvas size with performance optimization
+    const optimalSize = performanceRef.current.getCanvasSize(
+      video.videoWidth || 640,
+      video.videoHeight || 480
+    )
+    canvas.width = optimalSize.width
+    canvas.height = optimalSize.height
     
     setIsDetecting(true)
     console.log('Starting detection loop')
