@@ -32,5 +32,5 @@ global.ResizeObserver = class ResizeObserver {
 } as any
 
 // Mock requestAnimationFrame
-global.requestAnimationFrame = (cb: any) => setTimeout(cb, 0)
+global.requestAnimationFrame = (cb: any) => setTimeout(cb, 0) as unknown as number
 global.cancelAnimationFrame = (id: any) => clearTimeout(id)
